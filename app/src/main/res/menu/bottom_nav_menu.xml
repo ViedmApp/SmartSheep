@@ -16,4 +16,9 @@
         android:icon="@android:drawable/btn_star"
         android:title="@string/geneaoly" />
 
+    <item
+        android:id="@+id/navigation_reproduction"
+        android:icon="@android:drawable/btn_star"
+        android:title="@string/reproduction"/>
+
 </menu>

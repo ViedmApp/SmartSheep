@@ -8,6 +8,26 @@
     <fragment android:id="@+id/navigation_sanitation"
         android:name="cl.uach.inf.smartsheep.ui.sheep.SheepFragment"
         android:label="@string/sanitation"
+        >
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_production"
+        android:name="cl.uach.inf.smartsheep.ui.production.ProductionFragment"
+        android:label="@string/production"
+        />
+
+    <fragment
+        android:id="@+id/navigation_genealogy"
+        android:name="cl.uach.inf.smartsheep.ui.genealogy.GenealogyFragment"
+        android:label="@string/geneaoly"
+        />
+
+    <fragment
+        android:id="@+id/navigation_reproduction"
+        android:name="cl.uach.inf.smartsheep.ui.reproduction.ReproductionFragment"
+        android:label="@string/reproduction"
         />
 
 

@@ -1,14 +1,15 @@
 package cl.uach.inf.smartsheep;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import android.app.ActionBar;
-import android.drm.DrmStore;
 import android.os.Bundle;
+
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -19,6 +20,7 @@ public class SheepActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sheep);
 
+
         BottomNavigationView navView = findViewById(R.id.bottom_navView);
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -28,6 +30,6 @@ public class SheepActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-
+        
     }
 }
