@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_sanitation"
+        android:icon="@android:drawable/btn_star"
+        android:title="@string/sanitation" />
+
+    <item
+        android:id="@+id/navigation_production"
+        android:icon="@android:drawable/btn_star"
+        android:title="@string/production" />
+
+    <item
+        android:id="@+id/navigation_genealogy"
+        android:icon="@android:drawable/btn_star"
+        android:title="@string/geneaoly" />
+
+</menu>
