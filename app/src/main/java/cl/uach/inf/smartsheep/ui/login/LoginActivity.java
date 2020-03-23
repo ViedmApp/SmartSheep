@@ -81,12 +81,13 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResult == null) {
                     return;
                 }
+
                 loadingProgressBar.setVisibility(View.GONE);
                 if (loginResult.getError() != null) {
                     showLoginFailed(loginResult.getError());
                 }
                 if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
+                    //updateUiWithUser(loginResult.getSuccess());
                 }
                 setResult(Activity.RESULT_OK);
                 //Complete and destroy login activity once successful
@@ -132,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
                 //loadingProgressBar.setVisibility(View.VISIBLE);
                 /*loginViewModel.login(usernameEditText.getText().toString(),
                         passwordEditText.getText().toString());*/
-                login();
+                login(usernameEditText.getText().toString(), passwordEditText.getText().toString() );
 
             }
         });
@@ -148,23 +149,31 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
-    private void goMainScreen(LoggedInUserView model){
+    private void goMainScreen(String email){
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("Username", model.getDisplayName());
+        intent.putExtra("Username",email);
         startActivity(intent);
     }
 
     //Aqui pa abajo
     public static String token;
-    private void login(){
-        Login login = new Login("asasd@asda.cl",
-                "1712");
+    private void login(final String email, String password){
+        Login login = new Login(email,
+                password);
         Call<User> call = userClient.login(login);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()){
                     token = response.body().getToken();
+
+                    //Enviar token a MainActivity
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("Token", token);
+
+                    //Cambiar de pantalla a Main Activity
+                    goMainScreen(email);
+                    //Se debe borrar
                     Toast.makeText(LoginActivity.this, "TOKEN: "+token, Toast.LENGTH_SHORT).show();
 
                 }
