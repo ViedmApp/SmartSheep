@@ -25,10 +25,26 @@ import android.widget.Toast;
 
 import cl.uach.inf.smartsheep.MainActivity;
 import cl.uach.inf.smartsheep.R;
+import cl.uach.inf.smartsheep.data.model.LoggedInUser;
+import cl.uach.inf.smartsheep.data.model.Login;
+import cl.uach.inf.smartsheep.data.service.UserClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+
+    Retrofit.Builder builder = new Retrofit.Builder()
+            .baseUrl("http://127.0.0.1:5000/")
+            .addConverterFactory(GsonConverterFactory.create());
+
+    Retrofit retrofit = builder.build();
+
+    UserClient userClient = retrofit.create(UserClient.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,8 +129,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                /*loginViewModel.login(usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString());*/
+                login();
+
             }
         });
     }
@@ -134,4 +152,33 @@ public class LoginActivity extends AppCompatActivity {
         intent.putExtra("Username", model.getDisplayName());
         startActivity(intent);
     }
+
+    //Aqui pa abajo
+    public static String token;
+    private void login(){
+        Login login = new Login("asad@asdsa.com",
+                "1575");
+        Call<LoggedInUser> call = userClient.login(login);
+        call.enqueue(new Callback<LoggedInUser>() {
+            @Override
+            public void onResponse(Call<LoggedInUser> call, Response<LoggedInUser> response) {
+                if(response.isSuccessful()){
+                    token = response.body().getDisplayName();
+                }
+                else{
+                    Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrecta", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoggedInUser> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "error D:", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+    }
+
+
+
 }
