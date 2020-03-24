@@ -8,9 +8,7 @@
     <fragment android:id="@+id/navigation_sanitation"
         android:name="cl.uach.inf.smartsheep.ui.sheep.SheepFragment"
         android:label="@string/sanitation"
-        >
-
-    </fragment>
+        />
 
     <fragment
         android:id="@+id/navigation_production"
