@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -32,10 +31,8 @@ import java.io.IOException;
 
 import cl.uach.inf.smartsheep.MainActivity;
 import cl.uach.inf.smartsheep.R;
-import cl.uach.inf.smartsheep.data.model.LoggedInUser;
 import cl.uach.inf.smartsheep.data.model.Login;
 import cl.uach.inf.smartsheep.data.model.User;
-import cl.uach.inf.smartsheep.data.model.Predios;
 import cl.uach.inf.smartsheep.data.service.UserClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -179,9 +176,12 @@ public class LoginActivity extends AppCompatActivity {
                     //Enviar token a MainActivity
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("Token", token);
-                    getPredio();
+                    intent.putExtra("Username", email);
+
+                    startActivity(intent);
+                    //getPredio();
                     //Cambiar de pantalla a Main Activity
-                    goMainScreen(email);
+                    //goMainScreen(email);
                     //Se debe borrar
                     //Toast.makeText(LoginActivity.this, "TOKEN: "+token, Toast.LENGTH_SHORT).show();
 

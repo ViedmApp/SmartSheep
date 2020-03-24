@@ -4,16 +4,31 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
+
+import cl.uach.inf.smartsheep.data.model.Sheep;
+
 public class HomeViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    private MutableLiveData<ArrayList<Sheep>> mySheeps = new MutableLiveData<>();
 
     public HomeViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+        mySheeps = new MutableLiveData<>();
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<ArrayList<Sheep>> getArraySheep() {
+        if (mySheeps.getValue() == null){
+            loadSheeps();
+        }
+        return mySheeps;
+    }
+
+    private void loadSheeps() {
+
+        //mySheeps.setValue();
+    }
+
+    public void loadSheeps(ArrayList<Sheep> sheep){
+        mySheeps.setValue(sheep);
     }
 }

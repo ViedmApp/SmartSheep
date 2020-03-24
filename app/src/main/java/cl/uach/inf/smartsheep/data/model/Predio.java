@@ -1,10 +1,17 @@
 package cl.uach.inf.smartsheep.data.model;
 
-public class Predios {
+public class Predio {
     private int id;
     private String name;
     private  int latitude;
     private int longitude;
+
+    public Predio(int id, String name, int latitude, int longitude) {
+        this.id = id;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
     public int getId(){return id;}
     public void setId(){this.id = id; }

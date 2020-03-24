@@ -1,10 +1,12 @@
 package cl.uach.inf.smartsheep.data.utils;
 
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,6 +49,24 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
                         R.drawable.ic_venus_symbol
         );
 
+        String earringColor = dataSet.get(i).getEarringColor();
+        String color;
+
+        switch(earringColor){
+            case "orange":
+                color = "#f5c473";
+                break;
+            case "blue":
+                color = "#566fa4";
+                break;
+            case "green":
+                color = "#c0e66c";
+                break;
+            default:
+                color = "#";
+        }
+
+        viewHolder.linearLayout.setBackgroundColor(Color.parseColor(color));
     }
 
     @Override
@@ -59,13 +79,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         TextView category;
         TextView date;
         ImageView gender;
+        LinearLayout linearLayout;
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             earring = itemView.findViewById(R.id.sheep_earring);
             category = itemView.findViewById(R.id.sheep_category);
             date = itemView.findViewById(R.id.sheep_date);
             gender = itemView.findViewById(R.id.sheep_gender);
-
+            linearLayout = itemView.findViewById(R.id.sheep_layout);
         }
     }
 }

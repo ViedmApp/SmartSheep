@@ -3,4 +3,14 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+
+    <!-- Color palette by paletton.com-->
+    <color name="primary_0" nr="0">#9DC643</color>
+    <color name="primary_1" nr="1">#D9F49C</color>
+    <color name="primary_2" nr="2">#C0E66C</color>
+    <color name="primary_3" nr="3">#80AA24</color>
+    <color name="primary_4" nr="4">#60860C</color>
+
+    <color name="secondary_1" nr="1">#D9F49C</color>
+
 </resources>

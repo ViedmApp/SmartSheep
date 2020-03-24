@@ -1,12 +1,20 @@
 package cl.uach.inf.smartsheep;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
+import androidx.annotation.RequiresApi;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -16,22 +24,50 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Objects;
+
+import cl.uach.inf.smartsheep.data.model.Predio;
 import cl.uach.inf.smartsheep.data.model.Sheep;
-import cl.uach.inf.smartsheep.data.utils.RecyclerAdapter;
+import cl.uach.inf.smartsheep.data.service.UserClient;
+import cl.uach.inf.smartsheep.ui.home.HomeViewModel;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private ArrayList<Sheep> sheepArrayList;
 
+    private ArrayList<Sheep> sheepArrayList = new ArrayList<>();
+    private ArrayList<Predio> predioArrayList = new ArrayList<>();
 
+    private HomeViewModel homeViewModel;
+
+    Retrofit.Builder builder = new Retrofit.Builder()
+            .baseUrl("https://sheep-api.herokuapp.com/")
+            .addConverterFactory(GsonConverterFactory.create());
+
+    Retrofit retrofit = builder.build();
+
+    UserClient userClient = retrofit.create(UserClient.class);
+
+    private int currentPredio;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getPredio();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,25 +87,8 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
-        sheepArrayList = new ArrayList<>();
-        sheepArrayList.add(new Sheep("123",
-                "green",
-                "female",
-                "asd",
-                12.4,
-                "march",
-                "purpose",
-                "category",
-                12.5,
-                0
-                )
-        );
-
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        RecyclerAdapter sheepAdapter = new RecyclerAdapter(sheepArrayList, R.layout.sheep_layout);
-        recyclerView.setAdapter(sheepAdapter);
-
-
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel.loadSheeps(sheepArrayList);
 
     }
 
@@ -96,8 +115,137 @@ public class MainActivity extends AppCompatActivity {
         textView.append(this.getIntent().getExtras().get("Username").toString());
     }
 
-    public void searchSheep(View view){
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateRecyclerView();
 
     }
+
+    public void updateRecyclerView(){
+        RelativeLayout relativeLayout = findViewById(R.id.relativeLayout);
+        View root = relativeLayout.getRootView();
+        final RecyclerView recycler = root.findViewById(R.id.sheepRecyclerView);
+
+        homeViewModel.getArraySheep().observe(this, new Observer<ArrayList<Sheep>>() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onChanged(ArrayList<Sheep> sheep) {
+                Objects.requireNonNull(recycler.getAdapter()).notifyDataSetChanged();
+            }
+        });
+    }
+
+
+    private void getPredio(){
+        String token = this.getIntent().getExtras().get("Token").toString();
+        Call<ResponseBody> call = userClient.getPredio("Bearer "+ token);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.isSuccessful()){
+                    try {
+
+                        JSONArray jsonArray = new JSONArray(response.body().string());
+
+                        for (int i = 0; i < jsonArray.length(); ++i){
+                            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                            predioArrayList.add(
+                                    new Predio(jsonObject.getInt("id"),
+                                            jsonObject.getString("name"),
+                                            Integer.parseInt(jsonObject.getString("latitude")),
+                                            Integer.parseInt(jsonObject.getString("longitude"))
+                                    )
+                            );
+
+                        }
+
+                        if (predioArrayList.size() > 0){
+                            getSheeps(predioArrayList.get(0).getId());
+                            Toast.makeText(getApplicationContext(),
+                                    "Total Predios: "+ predioArrayList.size(),
+                                    Toast.LENGTH_SHORT).show();
+                            currentPredio = predioArrayList.get(0).getId();
+                        }else{
+                            Toast.makeText(getApplicationContext(),
+                                    "No tiene predios",
+                                    Toast.LENGTH_LONG).show();
+                        }
+
+
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this, "No hay predios", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "no hay conexión", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+    }
+
+    public void getSheeps(int predio){
+        Call<ResponseBody> call = userClient.getSheeps(predio);
+        call.enqueue(new Callback<ResponseBody>() {
+                         @Override
+                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                             if (response.isSuccessful()){
+                                 try{
+                                     JSONArray jsonArray = new JSONArray(response.body().string());
+
+                                     populateSheep(jsonArray);
+
+
+                                     updateRecyclerView();
+                                     Toast.makeText(getApplicationContext(),
+                                             "Total ovejas: " + sheepArrayList.size(),
+                                             Toast.LENGTH_LONG).show();
+
+                                 } catch (Exception e) {
+                                     e.printStackTrace();
+                                 }
+                             }
+                         }
+
+                         @Override
+                         public void onFailure(Call<ResponseBody> call, Throwable t) {
+                             Toast.makeText(getApplicationContext(), "no hay conexión", Toast.LENGTH_LONG).show();
+                         }
+                     }
+
+        );
+
+    }
+
+    public void populateSheep(JSONArray jsonArray) throws Exception{
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+
+            sheepArrayList.add(
+                    new Sheep(
+                            jsonObject.getString("earring"),
+                            jsonObject.getString("earring_color"),
+                            jsonObject.getString("gender"),
+                            jsonObject.getString("breed"),
+                            jsonObject.getDouble("birth_weight"),
+                            jsonObject.getString("date_birth"),
+                            jsonObject.getString("purpose"),
+                            jsonObject.getString("category"),
+                            jsonObject.getDouble("merit"),
+                            jsonObject.getInt("is_dead")
+                    )
+            );
+        }
+
+    }
+
 
 }
