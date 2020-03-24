@@ -5,14 +5,14 @@ public class Sheep {
     private String earringColor;
     private String gender;
     private String breed;
-    private int birthWeight;
+    private double birthWeight;
     private String birthDate;
     private String purpose;
     private String category;
-    private int merit;
+    private double merit;
     private int isDead;
 
-    public Sheep(String earring, String earringColor, String gender, String breed, int birthWeight, String birthDate, String purpose, String category, int merit, int isDead) {
+    public Sheep(String earring, String earringColor, String gender, String breed, double birthWeight, String birthDate, String purpose, String category, double merit, int isDead) {
         this.earring = earring;
         this.earringColor = earringColor;
         this.gender = gender;
@@ -25,17 +25,6 @@ public class Sheep {
         this.isDead = isDead;
     }
 
-    public Sheep(String earring, String earringColor, String gender, String breed, int birthWeight, String purpose, String category, int merit, int isDead) {
-        this.earring = earring;
-        this.earringColor = earringColor;
-        this.gender = gender;
-        this.breed = breed;
-        this.birthWeight = birthWeight;
-        this.purpose = purpose;
-        this.category = category;
-        this.merit = merit;
-        this.isDead = isDead;
-    }
 
     public String getEarring() {
         return earring;
@@ -69,11 +58,11 @@ public class Sheep {
         this.breed = breed;
     }
 
-    public int getBirthWeight() {
+    public double getBirthWeight() {
         return birthWeight;
     }
 
-    public void setBirthWeight(int birthWeight) {
+    public void setBirthWeight(double birthWeight) {
         this.birthWeight = birthWeight;
     }
 
@@ -101,11 +90,11 @@ public class Sheep {
         this.category = category;
     }
 
-    public int getMerit() {
+    public double getMerit() {
         return merit;
     }
 
-    public void setMerit(int merit) {
+    public void setMerit(double merit) {
         this.merit = merit;
     }
 

@@ -19,11 +19,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import cl.uach.inf.smartsheep.data.model.Sheep;
+import cl.uach.inf.smartsheep.data.utils.RecyclerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ArrayList<Sheep> sheepArrayList;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,25 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
+        sheepArrayList = new ArrayList<>();
+        sheepArrayList.add(new Sheep("123",
+                "green",
+                "female",
+                "asd",
+                12.4,
+                "march",
+                "purpose",
+                "category",
+                12.5,
+                0
+                )
+        );
+
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        RecyclerAdapter sheepAdapter = new RecyclerAdapter(sheepArrayList, R.layout.sheep_layout);
+        recyclerView.setAdapter(sheepAdapter);
+
+
 
     }
 

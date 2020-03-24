@@ -22,7 +22,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     private ArrayList<Sheep> dataSet;
     private int resource;
 
-    RecyclerAdapter(ArrayList<Sheep> dataSet, int resource) {
+    public RecyclerAdapter(ArrayList<Sheep> dataSet, int resource) {
         this.dataSet = dataSet;
         this.resource = resource;
     }
@@ -43,8 +43,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         viewHolder.date.setText(dataSet.get(i).getBirthDate());
         viewHolder.gender.setImageResource(
                 dataSet.get(i).getGender().equalsIgnoreCase("macho")?
-                R.drawable.Mars_symbol:
-                        R.drawable.Venus_symbol
+                R.drawable.ic_mars_symbol:
+                        R.drawable.ic_venus_symbol
         );
 
     }
