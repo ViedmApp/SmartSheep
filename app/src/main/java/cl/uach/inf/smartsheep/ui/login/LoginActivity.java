@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -23,12 +24,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import cl.uach.inf.smartsheep.MainActivity;
 import cl.uach.inf.smartsheep.R;
 import cl.uach.inf.smartsheep.data.model.LoggedInUser;
 import cl.uach.inf.smartsheep.data.model.Login;
 import cl.uach.inf.smartsheep.data.model.User;
+import cl.uach.inf.smartsheep.data.model.Predios;
 import cl.uach.inf.smartsheep.data.service.UserClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -170,11 +179,11 @@ public class LoginActivity extends AppCompatActivity {
                     //Enviar token a MainActivity
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("Token", token);
-
+                    getPredio();
                     //Cambiar de pantalla a Main Activity
                     goMainScreen(email);
                     //Se debe borrar
-                    Toast.makeText(LoginActivity.this, "TOKEN: "+token, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LoginActivity.this, "TOKEN: "+token, Toast.LENGTH_SHORT).show();
 
                 }
                 else{
@@ -187,7 +196,40 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "error D:", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    private void getPredio(){
+
+        Call<ResponseBody> call = userClient.getPredio("Bearer "+token);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.isSuccessful()){
+                    try {
+
+                            JSONArray jsonArray = new JSONArray(response.body().string());
+                            JSONObject jsonObject = (JSONObject) jsonArray.get(0);
+
+                            int idPredio = jsonObject.getInt("id");
+
+                            Toast.makeText(LoginActivity.this, "id: "+idPredio, Toast.LENGTH_SHORT).show();
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Toast.makeText(LoginActivity.this, "No hay predios", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "no hay conexión", Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
     }
 
