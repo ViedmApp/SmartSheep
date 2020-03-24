@@ -27,6 +27,7 @@ import cl.uach.inf.smartsheep.MainActivity;
 import cl.uach.inf.smartsheep.R;
 import cl.uach.inf.smartsheep.data.model.LoggedInUser;
 import cl.uach.inf.smartsheep.data.model.Login;
+import cl.uach.inf.smartsheep.data.model.User;
 import cl.uach.inf.smartsheep.data.service.UserClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,7 +40,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginViewModel loginViewModel;
 
     Retrofit.Builder builder = new Retrofit.Builder()
-            .baseUrl("https://sheep-api.herokuapp.com:5000/")
+            .baseUrl("https://sheep-api.herokuapp.com/")
             .addConverterFactory(GsonConverterFactory.create());
 
     Retrofit retrofit = builder.build();
@@ -50,7 +51,6 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
@@ -81,18 +81,18 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResult == null) {
                     return;
                 }
+
                 loadingProgressBar.setVisibility(View.GONE);
                 if (loginResult.getError() != null) {
                     showLoginFailed(loginResult.getError());
                 }
                 if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                    goMainScreen(loginResult.getSuccess());
+                    //updateUiWithUser(loginResult.getSuccess());
                 }
                 setResult(Activity.RESULT_OK);
                 //Complete and destroy login activity once successful
-
-                finish();
+                //goMainScreen(loginResult.getSuccess());
+                //finish();
             }
         });
 
@@ -130,10 +130,10 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-
+                //loadingProgressBar.setVisibility(View.VISIBLE);
+                /*loginViewModel.login(usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString());*/
+                login(usernameEditText.getText().toString(), passwordEditText.getText().toString() );
 
             }
         });
@@ -149,23 +149,32 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
-    private void goMainScreen(LoggedInUserView model){
+    private void goMainScreen(String email){
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("Username", model.getDisplayName());
+        intent.putExtra("Username",email);
         startActivity(intent);
     }
 
     //Aqui pa abajo
     public static String token;
-    private void login(){
-        Login login = new Login("asasd@asda.cl",
-                "1712");
-        Call<LoggedInUser> call = userClient.login(login);
-        call.enqueue(new Callback<LoggedInUser>() {
+    private void login(final String email, String password){
+        Login login = new Login(email,
+                password);
+        Call<User> call = userClient.login(login);
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<LoggedInUser> call, Response<LoggedInUser> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 if(response.isSuccessful()){
-                    token = response.body().getDisplayName();
+                    token = response.body().getToken();
+
+                    //Enviar token a MainActivity
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("Token", token);
+
+                    //Cambiar de pantalla a Main Activity
+                    goMainScreen(email);
+                    //Se debe borrar
+                    Toast.makeText(LoginActivity.this, "TOKEN: "+token, Toast.LENGTH_SHORT).show();
 
                 }
                 else{
@@ -174,7 +183,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<LoggedInUser> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "error D:", Toast.LENGTH_SHORT).show();
             }
         });

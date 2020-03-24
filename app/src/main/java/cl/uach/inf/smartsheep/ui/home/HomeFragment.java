@@ -33,10 +33,24 @@ public class HomeFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
+//        Button searchSheep = (Button) root.findViewById(R.id.search_sheep);
+  //      searchSheep.setOnClickListener(this);
 
         return root;
     }
 
+
+    /*
+    public void onClick(View view) {
+        Fragment fragment = null;
+
+        switch(view.getId()) {
+            case R.id.search_sheep:
+                Intent intent = new Intent(getActivity(), SheepActivity.class);
+                startActivity(intent);
+                break;
+        }
+    }*/
 
 
 }
