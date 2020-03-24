@@ -2,10 +2,10 @@ package cl.uach.inf.smartsheep.data.model;
 
 public class Login {
     private String user;
-    private String passaword;
+    private String password;
 
-    public Login(String user, String passaword){
+    public Login(String user, String password){
         this.user = user;
-        this.passaword = passaword;
+        this.password = password;
     }
 }

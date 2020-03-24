@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginViewModel loginViewModel;
 
     Retrofit.Builder builder = new Retrofit.Builder()
-            .baseUrl("http://127.0.0.1:5000/")
+            .baseUrl("https://sheep-api.herokuapp.com:5000/")
             .addConverterFactory(GsonConverterFactory.create());
 
     Retrofit retrofit = builder.build();
@@ -50,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
@@ -86,10 +87,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 if (loginResult.getSuccess() != null) {
                     updateUiWithUser(loginResult.getSuccess());
+                    goMainScreen(loginResult.getSuccess());
                 }
                 setResult(Activity.RESULT_OK);
                 //Complete and destroy login activity once successful
-                goMainScreen(loginResult.getSuccess());
+
                 finish();
             }
         });
@@ -129,9 +131,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                /*loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());*/
-                login();
+                loginViewModel.login(usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString());
+
 
             }
         });
@@ -156,14 +158,15 @@ public class LoginActivity extends AppCompatActivity {
     //Aqui pa abajo
     public static String token;
     private void login(){
-        Login login = new Login("asad@asdsa.com",
-                "1575");
+        Login login = new Login("asasd@asda.cl",
+                "1712");
         Call<LoggedInUser> call = userClient.login(login);
         call.enqueue(new Callback<LoggedInUser>() {
             @Override
             public void onResponse(Call<LoggedInUser> call, Response<LoggedInUser> response) {
                 if(response.isSuccessful()){
                     token = response.body().getDisplayName();
+
                 }
                 else{
                     Toast.makeText(LoginActivity.this, "Usuario o contraseña incorrecta", Toast.LENGTH_SHORT).show();
