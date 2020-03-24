@@ -23,12 +23,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import cl.uach.inf.smartsheep.MainActivity;
 import cl.uach.inf.smartsheep.R;
 import cl.uach.inf.smartsheep.data.model.LoggedInUser;
 import cl.uach.inf.smartsheep.data.model.Login;
 import cl.uach.inf.smartsheep.data.model.User;
 import cl.uach.inf.smartsheep.data.service.UserClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -170,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
                     //Enviar token a MainActivity
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("Token", token);
-
+                    getPredio();
                     //Cambiar de pantalla a Main Activity
                     goMainScreen(email);
                     //Se debe borrar
@@ -187,7 +190,31 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "error D:", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    private void getPredio(){
+        Call<ResponseBody> call = userClient.getPredio("Bearer "+token);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.isSuccessful()){
+                    try {
+                        Toast.makeText(LoginActivity.this, response.body().string() , Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Toast.makeText(LoginActivity.this, "error de predios?", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "no hay conexión", Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
     }
 
