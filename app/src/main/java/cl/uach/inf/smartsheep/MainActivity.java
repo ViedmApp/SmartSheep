@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.widget.RelativeLayout;
@@ -16,6 +17,7 @@ import com.google.android.material.navigation.NavigationView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -32,12 +34,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import cl.uach.inf.smartsheep.data.model.Predio;
 import cl.uach.inf.smartsheep.data.model.Sheep;
 import cl.uach.inf.smartsheep.data.service.UserClient;
+import cl.uach.inf.smartsheep.data.utils.SheepAdapter;
 import cl.uach.inf.smartsheep.ui.home.HomeViewModel;
 import cl.uach.inf.smartsheep.ui.property.PropertyViewModel;
 import okhttp3.ResponseBody;
@@ -282,4 +286,5 @@ public class MainActivity extends AppCompatActivity {
 
         super.onRestoreInstanceState(savedInstanceState, persistentState);
     }
+
 }

@@ -10,8 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -24,12 +26,12 @@ import java.util.ArrayList;
 
 import cl.uach.inf.smartsheep.R;
 import cl.uach.inf.smartsheep.data.model.Sheep;
-import cl.uach.inf.smartsheep.data.utils.RecyclerAdapter;
+import cl.uach.inf.smartsheep.data.utils.SheepAdapter;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterListener {
 
     private HomeViewModel homeViewModel;
-    private RecyclerAdapter sheepAdapter;
+    private SheepAdapter sheepAdapter;
     private SearchManager searchManager;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -64,7 +66,10 @@ public class HomeFragment extends Fragment {
         });
 
         //Recycler Adapter
-        sheepAdapter = new RecyclerAdapter(getContext(), homeViewModel.getArraySheep().getValue(), R.layout.sheep_layout);
+        sheepAdapter = new SheepAdapter(getContext(),
+                homeViewModel.getArraySheep().getValue(),
+                R.layout.sheep_layout,
+        this);
         recyclerView.setAdapter(sheepAdapter);
 
         //Search manager
@@ -114,4 +119,45 @@ public class HomeFragment extends Fragment {
 
         updateRecycler();
     }
+
+    @Override
+    public void onSheepSelected(Sheep sheep) {
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.sheep_dialog, null);
+
+        TextView textView = view.findViewById(R.id.sheepDialog_earring);
+        textView.setText(sheep.getEarring());
+        textView = view.findViewById(R.id.sheepDialog_earringColor);
+        textView.setText(sheep.getEarringColor());
+        textView = view.findViewById(R.id.sheepDialog_gender);
+        textView.setText(sheep.getGender());
+        textView = view.findViewById(R.id.sheepDialog_breed);
+        textView.setText(sheep.getBreed());
+        textView = view.findViewById(R.id.sheepDialog_birthWeight);
+        textView.setText(String.valueOf(sheep.getBirthWeight()));
+        textView = view.findViewById(R.id.sheepDialog_birthDate);
+        textView.setText(sheep.getBirthDate());
+        textView = view.findViewById(R.id.sheepDialog_purpose);
+        textView.setText(sheep.getPurpose());
+        textView = view.findViewById(R.id.sheepDialog_category);
+        textView.setText(sheep.getCategory());
+        textView = view.findViewById(R.id.sheepDialog_merit);
+        textView.setText(String.valueOf(sheep.getMerit()));
+        textView = view.findViewById(R.id.sheepDialog_isDead);
+        textView.setText(String.valueOf(sheep.getIsDead()));
+
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Información de la Oveja");
+        builder.setView(view);
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+
+    }
+
+
+
 }
