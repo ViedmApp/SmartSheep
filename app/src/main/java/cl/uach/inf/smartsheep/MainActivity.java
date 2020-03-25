@@ -1,7 +1,10 @@
 package cl.uach.inf.smartsheep;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 import android.view.Menu;
 import android.widget.RelativeLayout;
@@ -9,9 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -62,10 +65,21 @@ public class MainActivity extends AppCompatActivity {
 
     private int currentPredio;
 
+    private String token;
+
+    private SharedPreferences prefs;
+
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        prefs = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        token = (String) this.getIntent().getExtras().get("Token");
+         if (token == null){
+             token = prefs.getString("TOKEN", null);
+         }
+        prefs.edit().putString("TOKEN", token).apply();
 
         getPredio();
 
@@ -112,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         View root = navigationView.getHeaderView(0);
         final TextView textView = root.findViewById(R.id.username);
 
-        textView.append(this.getIntent().getExtras().get("Username").toString());
+        textView.append(prefs.getString("USERNAME", "owner"));
     }
 
     @Override
@@ -138,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getPredio(){
-        String token = this.getIntent().getExtras().get("Token").toString();
         Call<ResponseBody> call = userClient.getPredio("Bearer "+ token);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -201,8 +214,9 @@ public class MainActivity extends AppCompatActivity {
                                  try{
                                      JSONArray jsonArray = new JSONArray(response.body().string());
 
-                                     populateSheep(jsonArray);
+                                     sheepArrayList.clear();
 
+                                     populateSheep(jsonArray);
 
                                      updateRecyclerView();
                                      Toast.makeText(getApplicationContext(),
@@ -247,5 +261,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        if (token != null || !token.isEmpty()){
+            outState.putString("TOKEN", token);
+        }
+        super.onSaveInstanceState(outState);
+    }
 
+
+    @Override
+    public void onRestoreInstanceState(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
+        assert savedInstanceState != null;
+        token = savedInstanceState.getString("TOKEN");
+
+        super.onRestoreInstanceState(savedInstanceState, persistentState);
+    }
 }

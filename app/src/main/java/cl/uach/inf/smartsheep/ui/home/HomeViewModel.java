@@ -10,7 +10,8 @@ import cl.uach.inf.smartsheep.data.model.Sheep;
 
 public class HomeViewModel extends ViewModel {
 
-    private MutableLiveData<ArrayList<Sheep>> mySheeps = new MutableLiveData<>();
+    private MutableLiveData<ArrayList<Sheep>> mySheeps;
+    private MutableLiveData<Integer> predio;
 
     public HomeViewModel() {
         mySheeps = new MutableLiveData<>();
@@ -30,5 +31,9 @@ public class HomeViewModel extends ViewModel {
 
     public void loadSheeps(ArrayList<Sheep> sheep){
         mySheeps.setValue(sheep);
+    }
+
+    public void setPredio(int predio){
+        this.predio.setValue(predio);
     }
 }

@@ -3,14 +3,30 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="white">#FFFFFF</color>
 
     <!-- Color palette by paletton.com-->
-    <color name="primary_0" nr="0">#9DC643</color>
-    <color name="primary_1" nr="1">#D9F49C</color>
-    <color name="primary_2" nr="2">#C0E66C</color>
-    <color name="primary_3" nr="3">#80AA24</color>
-    <color name="primary_4" nr="4">#60860C</color>
 
-    <color name="secondary_1" nr="1">#D9F49C</color>
+    <!-- Green -->
+    <color name="primary_0">#9DC643</color>
+    <color name="primary_1">#D9F49C</color>
+    <color name="primary_2">#C0E66C</color>
+    <color name="primary_3">#80AA24</color>
+    <color name="primary_4">#60860C</color>
+
+    <!-- Orange -->
+    <color name="secondary1_0">#D39E47</color>
+    <color name="secondary1_1">#FFDCA3</color>
+    <color name="secondary1_2">#F5C473</color>
+    <color name="secondary1_3">#B57F26</color>
+    <color name="secondary1_4">#8F5E0D</color>
+
+    <!-- Blue -->
+    <color name="secondary2_0">#39548D</color>
+    <color name="secondary2_1">#8599C4</color>
+    <color name="secondary2_2">#566FA4</color>
+    <color name="secondary2_3">#233F79</color>
+    <color name="secondary2_4">#112A60</color>
+
 
 </resources>

@@ -5,7 +5,9 @@ import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -177,6 +179,11 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("Token", token);
                     intent.putExtra("Username", email);
+
+                    SharedPreferences.Editor editor = getSharedPreferences("Preferences", Context.MODE_PRIVATE)
+                            .edit();
+                    editor.putString("TOKEN", token).apply();
+                    editor.putString("USERNAME", email).apply();
 
                     startActivity(intent);
                     //getPredio();
