@@ -36,6 +36,7 @@ import cl.uach.inf.smartsheep.data.model.Predio;
 import cl.uach.inf.smartsheep.data.model.Sheep;
 import cl.uach.inf.smartsheep.data.service.UserClient;
 import cl.uach.inf.smartsheep.ui.home.HomeViewModel;
+import cl.uach.inf.smartsheep.ui.property.PropertyViewModel;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Predio> predioArrayList = new ArrayList<>();
 
     private HomeViewModel homeViewModel;
+    private PropertyViewModel propertyViewModel;
 
     Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl("https://sheep-api.herokuapp.com/")
@@ -89,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
 
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         homeViewModel.loadSheeps(sheepArrayList);
+
+        propertyViewModel = new ViewModelProvider(this).get(PropertyViewModel.class);
+        propertyViewModel.loadPredios(predioArrayList);
 
     }
 
@@ -200,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                              if (response.isSuccessful()){
                                  try{
                                      JSONArray jsonArray = new JSONArray(response.body().string());
-
+                                     sheepArrayList.clear();
                                      populateSheep(jsonArray);
 
 
