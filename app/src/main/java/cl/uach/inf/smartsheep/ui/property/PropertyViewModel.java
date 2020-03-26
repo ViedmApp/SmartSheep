@@ -37,7 +37,18 @@ public class PropertyViewModel extends ViewModel{
     }
 
     public LiveData<Integer> getIdPredio(){
+        if(idPredio == null){
+            idPredio = new MutableLiveData<>();
+            if(myPredios !=null){
+                idPredio.setValue(myPredios.getValue().get(0).getId());
+            }
+        }
+
         return idPredio;
+    }
+
+    public void setIdPredio(int idPredio){
+        this.idPredio.setValue(idPredio);
     }
 
     private void loadPredios() {
@@ -48,6 +59,8 @@ public class PropertyViewModel extends ViewModel{
     public void loadPredios(ArrayList<Predio> predio){
         myPredios.setValue(predio);
     }
+
+
 
 
 }

@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
 
         viewHolder.earring.setText(sheep.getEarring());
         viewHolder.category.setText(sheep.getCategory());
-        viewHolder.date.setText(sheep.getBirthDate());
+        viewHolder.isDead.setText(sheep.getIs_dead());
         viewHolder.gender.setImageResource(
                 sheep.getGender().equalsIgnoreCase("macho")?
                 R.drawable.ic_mars_symbol:
@@ -62,13 +61,17 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
 
         switch(earringColor){
             case "orange":
+            case "naranjo":
+            case "naranja":
                 color = R.color.secondary1_2;
                 break;
             case "blue":
+            case "azul":
                 color = R.color.secondary2_2;
                 break;
             case "green":
-                color = R.color.primary_2;
+            case "verde":
+                color = R.color.primary_3;
                 break;
             default:
                 color = R.color.white;
@@ -121,14 +124,14 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
     class ViewHolder extends RecyclerView.ViewHolder{
         TextView earring;
         TextView category;
-        TextView date;
+        TextView isDead;
         ImageView gender;
         LinearLayout linearLayout;
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             earring = itemView.findViewById(R.id.sheep_earring);
             category = itemView.findViewById(R.id.sheep_category);
-            date = itemView.findViewById(R.id.sheep_date);
+            isDead = itemView.findViewById(R.id.sheep_isDead);
             gender = itemView.findViewById(R.id.sheep_gender);
             linearLayout = itemView.findViewById(R.id.sheep_layout);
 

@@ -2,27 +2,26 @@ package cl.uach.inf.smartsheep.data.model;
 
 public class Sheep {
     private String earring;
-    private String earringColor;
+    private String earring_color;
     private String gender;
     private String breed;
-    private double birthWeight;
-    private String birthDate;
+    private double birth_weight;
     private String purpose;
     private String category;
-    private double merit;
-    private int isDead;
+    private int merit;
+    private String is_dead;
+    private int farms_id;
 
-    public Sheep(String earring, String earringColor, String gender, String breed, double birthWeight, String birthDate, String purpose, String category, double merit, int isDead) {
+    public Sheep(String earring, String earringColor, String gender, String breed, double birth_weight, String purpose, String category, int merit, String isDead) {
         this.earring = earring;
-        this.earringColor = earringColor;
+        this.earring_color = earringColor;
         this.gender = gender;
         this.breed = breed;
-        this.birthWeight = birthWeight;
-        this.birthDate = birthDate;
+        this.birth_weight = birth_weight;
         this.purpose = purpose;
         this.category = category;
         this.merit = merit;
-        this.isDead = isDead;
+        this.is_dead = isDead;
     }
 
 
@@ -35,11 +34,11 @@ public class Sheep {
     }
 
     public String getEarringColor() {
-        return earringColor;
+        return earring_color;
     }
 
     public void setEarringColor(String earringColor) {
-        this.earringColor = earringColor;
+        this.earring_color = earringColor;
     }
 
     public String getGender() {
@@ -58,20 +57,12 @@ public class Sheep {
         this.breed = breed;
     }
 
-    public double getBirthWeight() {
-        return birthWeight;
+    public double getBirth_weight() {
+        return birth_weight;
     }
 
-    public void setBirthWeight(double birthWeight) {
-        this.birthWeight = birthWeight;
-    }
-
-    public String getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(String birthDate) {
-        this.birthDate = birthDate;
+    public void setBirth_weight(double birth_weight) {
+        this.birth_weight = birth_weight;
     }
 
     public String getPurpose() {
@@ -90,20 +81,27 @@ public class Sheep {
         this.category = category;
     }
 
-    public double getMerit() {
+    public int getMerit() {
         return merit;
     }
 
-    public void setMerit(double merit) {
+    public void setMerit(int merit) {
         this.merit = merit;
     }
 
-    public int getIsDead() {
-        return isDead;
+    public String getIs_dead() {
+        return is_dead;
     }
 
-    public void setIsDead(int isDead) {
-        this.isDead = isDead;
+    public void setIs_dead(String is_dead) {
+        this.is_dead = is_dead;
     }
 
+    public int getFarms_id() {
+        return farms_id;
+    }
+
+    public void setFarms_id(int farms_id) {
+        this.farms_id = farms_id;
+    }
 }

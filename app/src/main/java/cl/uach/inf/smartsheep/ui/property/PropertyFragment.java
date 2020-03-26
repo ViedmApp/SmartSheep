@@ -1,5 +1,7 @@
 package cl.uach.inf.smartsheep.ui.property;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -82,8 +84,11 @@ public class PropertyFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //Toast.makeText(parent.getContext(), "Predio: "+parent.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
                 idPredio = predios.get(position).getId();
-                Toast.makeText(parent.getContext(), "ID Predio: "+idPredio, Toast.LENGTH_LONG).show();
 
+                SharedPreferences prefs = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+                prefs.edit().putInt("IDPREDIO", idPredio).apply();
+
+                Toast.makeText(parent.getContext(), "ID Predio: "+idPredio, Toast.LENGTH_LONG).show();
             }
 
             @Override

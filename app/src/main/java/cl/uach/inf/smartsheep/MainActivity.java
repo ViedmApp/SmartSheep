@@ -1,11 +1,11 @@
 package cl.uach.inf.smartsheep;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.widget.RelativeLayout;
@@ -17,7 +17,6 @@ import com.google.android.material.navigation.NavigationView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -34,14 +33,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import cl.uach.inf.smartsheep.data.model.Predio;
 import cl.uach.inf.smartsheep.data.model.Sheep;
 import cl.uach.inf.smartsheep.data.service.UserClient;
-import cl.uach.inf.smartsheep.data.utils.SheepAdapter;
 import cl.uach.inf.smartsheep.ui.home.HomeViewModel;
 import cl.uach.inf.smartsheep.ui.property.PropertyViewModel;
 import okhttp3.ResponseBody;
@@ -188,6 +187,10 @@ public class MainActivity extends AppCompatActivity {
                                     "Total Predios: "+ predioArrayList.size(),
                                     Toast.LENGTH_SHORT).show();
                             currentPredio = predioArrayList.get(0).getId();
+
+                            propertyViewModel.setIdPredio(currentPredio);
+                            prefs.edit().putInt("IDPREDIO", currentPredio).apply();
+
                         }else{
                             Toast.makeText(getApplicationContext(),
                                     "No tiene predios",
@@ -249,8 +252,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void populateSheep(JSONArray jsonArray) throws Exception{
-        for (int i = 0; i < jsonArray.length(); i++) {
+        int size = jsonArray.length();
+        for (int i = 0; i < size; i++) {
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = Date.valueOf(
+                    jsonObject.getString("date_birth").equalsIgnoreCase("null")?
+                    "0001-01-01":
+                    jsonObject.getString("date_birth"));
 
             sheepArrayList.add(
                     new Sheep(
@@ -259,11 +269,10 @@ public class MainActivity extends AppCompatActivity {
                             jsonObject.getString("gender"),
                             jsonObject.getString("breed"),
                             jsonObject.getDouble("birth_weight"),
-                            jsonObject.getString("date_birth"),
                             jsonObject.getString("purpose"),
                             jsonObject.getString("category"),
-                            jsonObject.getDouble("merit"),
-                            jsonObject.getInt("is_dead")
+                            jsonObject.getInt("merit"),
+                            jsonObject.getString("is_dead")
                     )
             );
         }
@@ -285,6 +294,12 @@ public class MainActivity extends AppCompatActivity {
         token = savedInstanceState.getString("TOKEN");
 
         super.onRestoreInstanceState(savedInstanceState, persistentState);
+    }
+
+    public void onButtonClick(final View view){
+        Intent intent = new Intent(this, FormActivity.class);
+
+        startActivity(intent);
     }
 
 }

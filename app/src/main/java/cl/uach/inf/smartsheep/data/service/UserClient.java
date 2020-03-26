@@ -2,6 +2,7 @@ package cl.uach.inf.smartsheep.data.service;
 
 import cl.uach.inf.smartsheep.data.model.LoggedInUser;
 import cl.uach.inf.smartsheep.data.model.Login;
+import cl.uach.inf.smartsheep.data.model.Sheep;
 import cl.uach.inf.smartsheep.data.model.User;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -23,5 +24,8 @@ public interface UserClient {
 
     @GET("sheep/{idPredio}")
     Call<ResponseBody> getSheeps(@Path("idPredio") int predio);
+
+    @POST("sheep")
+    Call<Sheep> postSheep(@Header("Authorization")String token, @Body Sheep sheep);
 
 }

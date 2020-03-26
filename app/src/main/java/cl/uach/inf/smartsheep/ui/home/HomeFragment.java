@@ -9,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -41,6 +42,8 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
                 ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+
+        Button button = root.findViewById(R.id.sheep_button);
 
         //RecyclerView
         RecyclerView recyclerView = root.findViewById(R.id.sheepRecyclerView);
@@ -134,9 +137,7 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
         textView = view.findViewById(R.id.sheepDialog_breed);
         textView.setText(sheep.getBreed());
         textView = view.findViewById(R.id.sheepDialog_birthWeight);
-        textView.setText(String.valueOf(sheep.getBirthWeight()));
-        textView = view.findViewById(R.id.sheepDialog_birthDate);
-        textView.setText(sheep.getBirthDate());
+        textView.setText(String.valueOf(sheep.getBirth_weight()));
         textView = view.findViewById(R.id.sheepDialog_purpose);
         textView.setText(sheep.getPurpose());
         textView = view.findViewById(R.id.sheepDialog_category);
@@ -144,7 +145,8 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
         textView = view.findViewById(R.id.sheepDialog_merit);
         textView.setText(String.valueOf(sheep.getMerit()));
         textView = view.findViewById(R.id.sheepDialog_isDead);
-        textView.setText(String.valueOf(sheep.getIsDead()));
+        textView.setText(sheep.getIs_dead().equalsIgnoreCase("T")
+         || sheep.getIs_dead().equalsIgnoreCase("1")? "Muerta": "Viva");
 
 
 
@@ -155,6 +157,9 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
+    }
+
+    public void onButtonClick(View view){
 
     }
 
