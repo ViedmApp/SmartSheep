@@ -264,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
             sheepArrayList.add(
                     new Sheep(
+                            jsonObject.getInt("_id"),
                             jsonObject.getString("earring"),
                             jsonObject.getString("earring_color"),
                             jsonObject.getString("gender"),

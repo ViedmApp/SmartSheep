@@ -9,6 +9,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,6 +47,7 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull SheepAdapter.ViewHolder viewHolder, int i) {
         final Sheep sheep = dataSetFiltered.get(i);
+        viewHolder.itemView.setLongClickable(true);
 
         viewHolder.earring.setText(sheep.getEarring());
         viewHolder.category.setText(sheep.getCategory());
@@ -59,7 +61,7 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
         String earringColor = sheep.getEarringColor();
         int color;
 
-        switch(earringColor){
+        switch(earringColor.toLowerCase()){
             case "orange":
             case "naranjo":
             case "naranja":
@@ -121,7 +123,7 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
         void onSheepSelected(Sheep sheep);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         TextView earring;
         TextView category;
         TextView isDead;
@@ -129,6 +131,7 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
         LinearLayout linearLayout;
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemView.setOnLongClickListener(this);
             earring = itemView.findViewById(R.id.sheep_earring);
             category = itemView.findViewById(R.id.sheep_category);
             isDead = itemView.findViewById(R.id.sheep_isDead);
@@ -144,6 +147,14 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
                     }
             );
 
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Toast.makeText(context, "position: " + dataSetFiltered.get(getAdapterPosition()).getEarring(),
+                    Toast.LENGTH_SHORT).show();
+
+            return false;
         }
     }
 

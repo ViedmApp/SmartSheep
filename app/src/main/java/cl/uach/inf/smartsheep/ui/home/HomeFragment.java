@@ -2,6 +2,8 @@ package cl.uach.inf.smartsheep.ui.home;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import cl.uach.inf.smartsheep.FormActivity;
 import cl.uach.inf.smartsheep.R;
 import cl.uach.inf.smartsheep.data.model.Sheep;
 import cl.uach.inf.smartsheep.data.utils.SheepAdapter;
@@ -75,10 +78,6 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
         this);
         recyclerView.setAdapter(sheepAdapter);
 
-        //Search manager
-        //
-
-
 
         return root;
     }
@@ -124,7 +123,7 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
     }
 
     @Override
-    public void onSheepSelected(Sheep sheep) {
+    public void onSheepSelected(final Sheep sheep) {
         LayoutInflater inflater = getLayoutInflater();
         View view = inflater.inflate(R.layout.sheep_dialog, null);
 
@@ -153,16 +152,27 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Información de la Oveja");
         builder.setView(view);
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.setNeutralButton("Editar oveja", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(getParentFragment().getActivity(), FormActivity.class);
+                intent.putExtra("SHEEP", sheep);
+
+                startActivity(intent);
+            }
+        });
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
 
     }
-
-    public void onButtonClick(View view){
-
-    }
-
 
 
 }

@@ -10,6 +10,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -27,5 +28,11 @@ public interface UserClient {
 
     @POST("sheep")
     Call<Sheep> postSheep(@Header("Authorization")String token, @Body Sheep sheep);
+
+    @PUT("updatesheep/{id_oveja}")
+    Call<Sheep> updateSheep(
+            @Header("Authorization") String token,
+            @Path("id_oveja") int id_oveja,
+            @Body Sheep sheep);
 
 }

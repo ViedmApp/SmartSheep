@@ -3,16 +3,24 @@ package cl.uach.inf.smartsheep;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.io.InvalidObjectException;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.zip.Inflater;
 
 import cl.uach.inf.smartsheep.data.model.Sheep;
 import cl.uach.inf.smartsheep.data.service.UserClient;
@@ -62,7 +70,7 @@ public class FormActivity extends AppCompatActivity {
                 R.array.gender_selection,
                 android.R.layout.simple_spinner_dropdown_item
         );
-        genderSpinner.setAdapter(adapter);
+
 
         deadSpinner = (Spinner) findViewById(R.id.form_isDead);
         ArrayAdapter<CharSequence> deadAdapter = ArrayAdapter.createFromResource(
@@ -70,14 +78,45 @@ public class FormActivity extends AppCompatActivity {
                 R.array.status,
                 android.R.layout.simple_spinner_dropdown_item
         );
-        deadSpinner.setAdapter(deadAdapter);
 
+
+        Intent intent = getIntent();
+        sheep = (Sheep) intent.getSerializableExtra("SHEEP");
+        if (sheep != null){
+            preloadData();
+            deadSpinner.setSelection(deadAdapter.getPosition(sheep.getIs_dead()));
+            genderSpinner.setSelection(adapter.getPosition(sheep.getGender()));
+        }
+
+        genderSpinner.setAdapter(adapter);
+        deadSpinner.setAdapter(deadAdapter);
+    }
+
+    private void preloadData() {
+        //Inflate Layout
+        LayoutInflater inflater = getLayoutInflater();
+
+        EditText editText = findViewById(R.id.form_earring);
+        editText.setText(sheep.getEarring());
+        editText = findViewById(R.id.form_earringColor);
+        editText.setText(sheep.getEarringColor());
+        editText = findViewById(R.id.form_merit);
+        editText.setText(String.valueOf(sheep.getMerit()));
+        editText = findViewById(R.id.form_breed);
+        editText.setText(sheep.getBreed());
+        editText = findViewById(R.id.form_category);
+        editText.setText(sheep.getCategory());
+        editText = findViewById(R.id.form_purpose);
+        editText.setText(sheep.getPurpose());
+        editText = findViewById(R.id.form_birthWeight);
+        editText.setText(
+                String.format(Locale.ENGLISH, "%f", sheep.getBirth_weight())
+        );
 
     }
 
     public void onClick(View view) {
         //Send Data
-        Sheep sheep;
 
         try {
             EditText editText = (EditText) findViewById(R.id.form_earring);
@@ -99,17 +138,76 @@ public class FormActivity extends AppCompatActivity {
 
             String isDead = String.valueOf(deadSpinner.getSelectedItem());
 
-            sheep = new Sheep(
-                    earring,
-                    earringColor,
-                    gender,
-                    breed,
-                    birthWeight,
-                    purpose,
-                    category,
-                    merit,
-                    isDead
-            );
+            if(this.sheep == null) {
+                Sheep sheep = new Sheep(
+                        earring,
+                        earringColor,
+                        gender,
+                        breed,
+                        birthWeight,
+                        purpose,
+                        category,
+                        merit,
+                        isDead
+                );
+                sendNewSheep(sheep);
+
+            } else {
+                //Edit sheep data
+                sheep.setEarring(earring);
+                sheep.setEarringColor(earringColor);
+                sheep.setMerit(merit);
+                sheep.setBirth_weight(birthWeight);
+                sheep.setBreed(breed);
+                sheep.setGender(gender);
+                sheep.setIs_dead(isDead);
+                sheep.setPurpose(purpose);
+                sheep.setCategory(category);
+
+                sendEditSheep(sheep);
+            }
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void sendEditSheep(Sheep sheep) {
+        Call<Sheep> call = userClient.updateSheep(
+                "Bearer " + token,
+                sheep.get_id(),
+                sheep);
+
+        call.enqueue(new Callback<Sheep>() {
+            @Override
+            public void onResponse(Call<Sheep> call, Response<Sheep> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Oveja editada exitosamente",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Sheep> call, Throwable t) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Error editando oveja",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+            }
+        });
+
+
+    }
+
+    private void sendNewSheep(Sheep sheep) throws InvalidObjectException {
 
             if (currentPredio == 0 || token == null)
                 throw new InvalidObjectException("Predio no válido");
@@ -137,10 +235,9 @@ public class FormActivity extends AppCompatActivity {
                     ).show();
                 }
             });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
+
+
+
 
 }

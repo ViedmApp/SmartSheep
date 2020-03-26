@@ -1,6 +1,10 @@
 package cl.uach.inf.smartsheep.data.model;
 
-public class Sheep {
+import java.io.Serializable;
+
+public class Sheep implements Serializable {
+
+    private int _id;
     private String earring;
     private String earring_color;
     private String gender;
@@ -24,6 +28,26 @@ public class Sheep {
         this.is_dead = isDead;
     }
 
+    public Sheep(int _id, String earring, String earring_color, String gender, String breed, double birth_weight, String purpose, String category, int merit, String is_dead) {
+        this._id = _id;
+        this.earring = earring;
+        this.earring_color = earring_color;
+        this.gender = gender;
+        this.breed = breed;
+        this.birth_weight = birth_weight;
+        this.purpose = purpose;
+        this.category = category;
+        this.merit = merit;
+        this.is_dead = is_dead;
+    }
+
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
 
     public String getEarring() {
         return earring;
