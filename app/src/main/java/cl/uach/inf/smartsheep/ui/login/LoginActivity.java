@@ -186,6 +186,7 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString("USERNAME", email).apply();
 
                     startActivity(intent);
+                    finish();
                     //getPredio();
                     //Cambiar de pantalla a Main Activity
                     //goMainScreen(email);
