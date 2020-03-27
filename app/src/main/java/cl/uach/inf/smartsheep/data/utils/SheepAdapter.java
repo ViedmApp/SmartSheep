@@ -51,7 +51,7 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
 
         viewHolder.earring.setText(sheep.getEarring());
         viewHolder.category.setText(sheep.getCategory());
-        viewHolder.isDead.setText(sheep.getIs_dead());
+        viewHolder.isDead.setText(sheep.getIs_dead().equalsIgnoreCase("1")? "Muerta":"Viva");
         viewHolder.gender.setImageResource(
                 sheep.getGender().equalsIgnoreCase("macho")?
                 R.drawable.ic_mars_symbol:
@@ -99,11 +99,14 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
                 } else {
                     ArrayList<Sheep> filteredList = new ArrayList<>();
                     for (Sheep row: dataSet){
+                        String isdead = row.getIs_dead()
+                                .equalsIgnoreCase("1") ? "muerta": "viva";
                         if (row.getEarring().contains(charString)
                         || row.getCategory().toLowerCase().contains(charString)
                         || row.getEarringColor().toLowerCase().contains(charString)
                         || row.getPurpose().toLowerCase().contains(charString)
                         || row.getIs_dead().toLowerCase().contains(charString)
+                        || isdead.contains(charString)
                         || row.getGender().toLowerCase().contains(charString)){
                             filteredList.add(row);
                         }
