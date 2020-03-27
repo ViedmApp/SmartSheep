@@ -1,5 +1,6 @@
 package cl.uach.inf.smartsheep.ui.logout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import cl.uach.inf.smartsheep.R;
+import cl.uach.inf.smartsheep.ui.login.LoginActivity;
 
 public class LogoutFragment extends Fragment {
 
@@ -30,6 +32,10 @@ public class LogoutFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
+        Intent intent =  new Intent(getContext(), LoginActivity.class);
+        startActivity(intent);
+        getActivity().getFragmentManager().popBackStack();
         return root;
     }
 }
