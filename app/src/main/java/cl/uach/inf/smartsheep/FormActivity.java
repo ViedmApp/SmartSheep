@@ -1,8 +1,10 @@
 package cl.uach.inf.smartsheep;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,6 +37,8 @@ public class FormActivity extends AppCompatActivity {
     private Sheep sheep;
     private Spinner genderSpinner;
     private Spinner deadSpinner;
+    ArrayAdapter<CharSequence> deadAdapter;
+    ArrayAdapter<CharSequence> adapter;
 
     Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl("https://sheep-api.herokuapp.com/")
@@ -47,8 +51,6 @@ public class FormActivity extends AppCompatActivity {
     SharedPreferences prefs;
     String token;
     int currentPredio;
-
-    PropertyViewModel propertyViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +67,7 @@ public class FormActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT).show();
 
         genderSpinner = (Spinner) findViewById(R.id.form_gender);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+        adapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.gender_selection,
                 android.R.layout.simple_spinner_dropdown_item
@@ -73,7 +75,7 @@ public class FormActivity extends AppCompatActivity {
 
 
         deadSpinner = (Spinner) findViewById(R.id.form_isDead);
-        ArrayAdapter<CharSequence> deadAdapter = ArrayAdapter.createFromResource(
+        deadAdapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.status,
                 android.R.layout.simple_spinner_dropdown_item
@@ -93,8 +95,6 @@ public class FormActivity extends AppCompatActivity {
     }
 
     private void preloadData() {
-        //Inflate Layout
-        LayoutInflater inflater = getLayoutInflater();
 
         EditText editText = findViewById(R.id.form_earring);
         editText.setText(sheep.getEarring());
@@ -110,7 +110,7 @@ public class FormActivity extends AppCompatActivity {
         editText.setText(sheep.getPurpose());
         editText = findViewById(R.id.form_birthWeight);
         editText.setText(
-                String.format(Locale.ENGLISH, "%f", sheep.getBirth_weight())
+                String.format(Locale.ENGLISH, "%.2f", sheep.getBirth_weight())
         );
 
     }
@@ -136,9 +136,10 @@ public class FormActivity extends AppCompatActivity {
 
             String gender = String.valueOf(genderSpinner.getSelectedItem());
 
-            String isDead = String.valueOf(deadSpinner.getSelectedItem());
+            String isDead = String.valueOf(deadAdapter.getPosition(deadSpinner.getSelectedItem().toString()));
 
             if(this.sheep == null) {
+                //Send new sheep
                 Sheep sheep = new Sheep(
                         earring,
                         earringColor,
@@ -164,9 +165,25 @@ public class FormActivity extends AppCompatActivity {
                 sheep.setPurpose(purpose);
                 sheep.setCategory(category);
 
-                sendEditSheep(sheep);
-            }
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Enviar oveja");
+                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
 
+                builder.setPositiveButton("Enviar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendEditSheep(sheep);
+                    }
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+                //sendEditSheep(sheep);
+            }
 
 
         } catch (Exception e) {
@@ -207,8 +224,10 @@ public class FormActivity extends AppCompatActivity {
 
     }
 
-    private void sendNewSheep(Sheep sheep) throws InvalidObjectException {
 
+
+    private void sendNewSheep(Sheep sheep) throws InvalidObjectException {
+            //Send new sheep to api
             if (currentPredio == 0 || token == null)
                 throw new InvalidObjectException("Predio no válido");
 
