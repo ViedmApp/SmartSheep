@@ -93,13 +93,18 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
-                String charString = constraint.toString();
+                String charString = constraint.toString().toLowerCase();
                 if (charString.isEmpty()){
                     dataSetFiltered = dataSet;
                 } else {
                     ArrayList<Sheep> filteredList = new ArrayList<>();
                     for (Sheep row: dataSet){
-                        if (row.getEarring().contains(charString)){
+                        if (row.getEarring().contains(charString)
+                        || row.getCategory().toLowerCase().contains(charString)
+                        || row.getEarringColor().toLowerCase().contains(charString)
+                        || row.getPurpose().toLowerCase().contains(charString)
+                        || row.getIs_dead().toLowerCase().contains(charString)
+                        || row.getGender().toLowerCase().contains(charString)){
                             filteredList.add(row);
                         }
                     }
@@ -123,7 +128,7 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
         void onSheepSelected(Sheep sheep);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder {
         TextView earring;
         TextView category;
         TextView isDead;
@@ -131,7 +136,6 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
         LinearLayout linearLayout;
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            itemView.setOnLongClickListener(this);
             earring = itemView.findViewById(R.id.sheep_earring);
             category = itemView.findViewById(R.id.sheep_category);
             isDead = itemView.findViewById(R.id.sheep_isDead);
@@ -149,13 +153,6 @@ public class SheepAdapter extends RecyclerView.Adapter<SheepAdapter.ViewHolder> 
 
         }
 
-        @Override
-        public boolean onLongClick(View v) {
-            Toast.makeText(context, "position: " + dataSetFiltered.get(getAdapterPosition()).getEarring(),
-                    Toast.LENGTH_SHORT).show();
-
-            return false;
-        }
     }
 
 }
