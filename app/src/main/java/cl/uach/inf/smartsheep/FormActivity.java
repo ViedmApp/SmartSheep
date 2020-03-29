@@ -37,8 +37,8 @@ public class FormActivity extends AppCompatActivity {
     private Sheep sheep;
     private Spinner genderSpinner;
     private Spinner deadSpinner;
-    ArrayAdapter<CharSequence> deadAdapter;
-    ArrayAdapter<CharSequence> adapter;
+    ArrayAdapter deadAdapter;
+    ArrayAdapter adapter;
 
     Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl("https://sheep-api.herokuapp.com/")
@@ -62,32 +62,31 @@ public class FormActivity extends AppCompatActivity {
         token = prefs.getString("TOKEN", null);
         currentPredio = prefs.getInt("IDPREDIO", 0);
 
-        Toast.makeText(this,
-                "predio: " + currentPredio,
-                Toast.LENGTH_SHORT).show();
+        ArrayList<String> genderOptions = new ArrayList<>();
+        genderOptions.add("Hembra");
+        genderOptions.add("Macho");
 
         genderSpinner = (Spinner) findViewById(R.id.form_gender);
-        adapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.gender_selection,
-                android.R.layout.simple_spinner_dropdown_item
-        );
+        adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,genderOptions);
 
+
+
+        ArrayList<String> deadOptions = new ArrayList<>();
+        deadOptions.add("Viva");
+        deadOptions.add("Muerta");
 
         deadSpinner = (Spinner) findViewById(R.id.form_isDead);
-        deadAdapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.status,
-                android.R.layout.simple_spinner_dropdown_item
-        );
-
+        deadAdapter = new ArrayAdapter(this,
+                android.R.layout.simple_spinner_dropdown_item,
+                deadOptions);
 
         Intent intent = getIntent();
         sheep = (Sheep) intent.getSerializableExtra("SHEEP");
         if (sheep != null){
             preloadData();
-            deadSpinner.setSelection(deadAdapter.getPosition(sheep.getIs_dead()));
-            genderSpinner.setSelection(adapter.getPosition(sheep.getGender()));
+            String dead = sheep.getIs_dead().equalsIgnoreCase("1")? "Muerta":"Viva";
+            deadSpinner.setSelection(deadOptions.indexOf(dead));
+            genderSpinner.setSelection(genderOptions.indexOf(sheep.getGender()));
         }
 
         genderSpinner.setAdapter(adapter);
@@ -166,7 +165,7 @@ public class FormActivity extends AppCompatActivity {
                 sheep.setCategory(category);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Enviar oveja");
+                builder.setTitle("¿Desea guardar los cambios?");
                 builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

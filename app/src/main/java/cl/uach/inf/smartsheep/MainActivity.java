@@ -3,43 +3,34 @@ package cl.uach.inf.smartsheep;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.view.View;
 import android.view.Menu;
-import android.widget.RelativeLayout;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.navigation.NavigationView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.lifecycle.Observer;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import cl.uach.inf.smartsheep.data.model.Predio;
-import cl.uach.inf.smartsheep.data.model.Sheep;
 import cl.uach.inf.smartsheep.data.service.UserClient;
 import cl.uach.inf.smartsheep.ui.home.HomeViewModel;
 import cl.uach.inf.smartsheep.ui.property.PropertyViewModel;
@@ -53,8 +44,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-
-    private ArrayList<Sheep> sheepArrayList = new ArrayList<>();
     private ArrayList<Predio> predioArrayList = new ArrayList<>();
 
     private HomeViewModel homeViewModel;
@@ -87,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         prefs.edit().putString("TOKEN", token).apply();
 
         getPredio();
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -106,8 +96,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-        homeViewModel.loadSheeps(sheepArrayList);
+
 
         propertyViewModel = new ViewModelProvider(this).get(PropertyViewModel.class);
         propertyViewModel.loadPredios(predioArrayList);
@@ -126,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+
     }
 
 
@@ -135,27 +125,6 @@ public class MainActivity extends AppCompatActivity {
         final TextView textView = root.findViewById(R.id.username);
 
         textView.append(prefs.getString("USERNAME", "owner"));
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        updateRecyclerView();
-
-    }
-
-    public void updateRecyclerView(){
-        RelativeLayout relativeLayout = findViewById(R.id.relativeLayout);
-        View root = relativeLayout.getRootView();
-        final RecyclerView recycler = root.findViewById(R.id.sheepRecyclerView);
-
-        homeViewModel.getArraySheep().observe(this, new Observer<ArrayList<Sheep>>() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public void onChanged(ArrayList<Sheep> sheep) {
-                Objects.requireNonNull(recycler.getAdapter()).notifyDataSetChanged();
-            }
-        });
     }
 
 
@@ -182,14 +151,14 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         if (predioArrayList.size() > 0){
-                            getSheeps(predioArrayList.get(0).getId());
-                            Toast.makeText(getApplicationContext(),
-                                    "Total Predios: "+ predioArrayList.size(),
-                                    Toast.LENGTH_SHORT).show();
+
                             currentPredio = predioArrayList.get(0).getId();
 
                             propertyViewModel.setIdPredio(currentPredio);
                             prefs.edit().putInt("IDPREDIO", currentPredio).apply();
+                            homeViewModel.setPredio(currentPredio);
+
+                            homeViewModel.loadSheeps();
 
                         }else{
                             Toast.makeText(getApplicationContext(),
@@ -210,75 +179,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "no hay conexión", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "No hay conexión", Toast.LENGTH_SHORT).show();
 
             }
         });
 
     }
 
-    public void getSheeps(int predio){
-        Call<ResponseBody> call = userClient.getSheeps(predio);
-        call.enqueue(new Callback<ResponseBody>() {
-                         @Override
-                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                             if (response.isSuccessful()){
-                                 try{
-                                     JSONArray jsonArray = new JSONArray(response.body().string());
-
-                                     sheepArrayList.clear();
-
-                                     populateSheep(jsonArray);
-
-                                     updateRecyclerView();
-                                     Toast.makeText(getApplicationContext(),
-                                             "Total ovejas: " + sheepArrayList.size(),
-                                             Toast.LENGTH_LONG).show();
-
-                                 } catch (Exception e) {
-                                     e.printStackTrace();
-                                 }
-                             }
-                         }
-
-                         @Override
-                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                             Toast.makeText(getApplicationContext(), "no hay conexión", Toast.LENGTH_LONG).show();
-                         }
-                     }
-
-        );
-
-    }
-
-    public void populateSheep(JSONArray jsonArray) throws Exception{
-        int size = jsonArray.length();
-        for (int i = 0; i < size; i++) {
-            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = Date.valueOf(
-                    jsonObject.getString("date_birth").equalsIgnoreCase("null")?
-                    "0001-01-01":
-                    jsonObject.getString("date_birth"));
-
-            sheepArrayList.add(
-                    new Sheep(
-                            jsonObject.getInt("_id"),
-                            jsonObject.getString("earring"),
-                            jsonObject.getString("earring_color"),
-                            jsonObject.getString("gender"),
-                            jsonObject.getString("breed"),
-                            jsonObject.getDouble("birth_weight"),
-                            jsonObject.getString("purpose"),
-                            jsonObject.getString("category"),
-                            jsonObject.getInt("merit"),
-                            jsonObject.getString("is_dead")
-                    )
-            );
-        }
-
-    }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -293,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
     public void onRestoreInstanceState(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         assert savedInstanceState != null;
         token = savedInstanceState.getString("TOKEN");
-
         super.onRestoreInstanceState(savedInstanceState, persistentState);
     }
 
@@ -302,5 +208,6 @@ public class MainActivity extends AppCompatActivity {
 
         startActivity(intent);
     }
+
 
 }

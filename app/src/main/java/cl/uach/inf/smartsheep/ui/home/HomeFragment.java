@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 
@@ -36,7 +38,6 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
 
     private HomeViewModel homeViewModel;
     private SheepAdapter sheepAdapter;
-    private SearchManager searchManager;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -45,8 +46,6 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
                 ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-
-        Button button = root.findViewById(R.id.sheep_button);
 
         //RecyclerView
         RecyclerView recyclerView = root.findViewById(R.id.sheepRecyclerView);
@@ -63,14 +62,6 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
         recyclerView.addItemDecoration(dividerItemDecoration);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        //Set Observer for Sheep Arraylist
-        homeViewModel.getArraySheep().observe(getViewLifecycleOwner(), new Observer<ArrayList<Sheep>>() {
-            @Override
-            public void onChanged(ArrayList<Sheep> sheep) {
-                updateRecycler();
-            }
-        });
-
         //Recycler Adapter
         sheepAdapter = new SheepAdapter(getContext(),
                 homeViewModel.getArraySheep().getValue(),
@@ -78,17 +69,42 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
         this);
         recyclerView.setAdapter(sheepAdapter);
 
+        homeViewModel.getArraySheep().observe(getViewLifecycleOwner(), new Observer<ArrayList<Sheep>>() {
+            @Override
+            public void onChanged(ArrayList<Sheep> sheep) {
+                updateRecycler();
+            }
+        });
+
+
+        final SwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                homeViewModel.loadSheeps();
+                updateRecycler();
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(swipeRefreshLayout.isRefreshing()) swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 1000);
+            }
+        });
+
 
         return root;
     }
 
-    public void updateRecycler(){
+    private void updateRecycler(){
         sheepAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
         menu.clear();
 
         inflater.inflate(R.menu.main, menu);
@@ -96,7 +112,7 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
         menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
 
-        searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menuItem.getActionView();
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
@@ -119,7 +135,6 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
             }
         });
 
-        updateRecycler();
     }
 
     @Override
@@ -173,6 +188,5 @@ public class HomeFragment extends Fragment implements SheepAdapter.SheepAdapterL
         alertDialog.show();
 
     }
-
 
 }

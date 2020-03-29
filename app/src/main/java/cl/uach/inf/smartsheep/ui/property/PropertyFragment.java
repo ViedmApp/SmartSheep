@@ -3,7 +3,6 @@ package cl.uach.inf.smartsheep.ui.property;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,24 +19,26 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import cl.uach.inf.smartsheep.R;
 import cl.uach.inf.smartsheep.data.model.Predio;
+import cl.uach.inf.smartsheep.ui.home.HomeViewModel;
 
 public class PropertyFragment extends Fragment {
 
     private PropertyViewModel propertyViewModel;
-    public String nombrePredio;
-    public int nPredios;
-    public int idPredio;
+    private String nombrePredio;
+    private int nPredios;
+    private int idPredio;
     ArrayList<String> nombresPredios = new ArrayList<>();
     ArrayList<Predio> predios = new ArrayList<>();
-;
+    private HomeViewModel homeViewModel;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         propertyViewModel =
                 ViewModelProviders.of(getActivity()).get(PropertyViewModel.class);
+        homeViewModel = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_property, container, false);
         final TextView textView = root.findViewById(R.id.text_gallery);
         final Spinner spinnerPredios = root.findViewById(R.id.idSpinnerPredios);
@@ -82,13 +83,12 @@ public class PropertyFragment extends Fragment {
         spinnerPredios.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(parent.getContext(), "Predio: "+parent.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
                 idPredio = predios.get(position).getId();
 
                 SharedPreferences prefs = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
                 prefs.edit().putInt("IDPREDIO", idPredio).apply();
-
-                Toast.makeText(parent.getContext(), "ID Predio: "+idPredio, Toast.LENGTH_LONG).show();
+                homeViewModel.setPredio(idPredio);
+                Toast.makeText(parent.getContext(), "ID Predio: " + idPredio, Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -99,4 +99,7 @@ public class PropertyFragment extends Fragment {
 
         return root;
     }
+
+
+
 }

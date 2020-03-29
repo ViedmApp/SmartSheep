@@ -42,7 +42,7 @@ public class HomeViewModel extends ViewModel {
         mySheeps.setValue(new ArrayList<Sheep>());
     }
 
-    public LiveData<ArrayList<Sheep>> getArraySheep() {
+    LiveData<ArrayList<Sheep>> getArraySheep() {
         if (mySheeps.getValue() == null || mySheeps.getValue().size() == 0){
             loadSheeps();
         }
@@ -51,7 +51,7 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void loadSheeps() {
-        final ArrayList<Sheep> sheepArrayList = new ArrayList<>();
+        final ArrayList<Sheep> sheepArrayList = mySheeps.getValue();
         if(predio.getValue() ==null) return;
 
         Call<ResponseBody> call = userClient.getSheeps(predio.getValue());
@@ -62,6 +62,7 @@ public class HomeViewModel extends ViewModel {
                                  try{
                                      JSONArray jsonArray = new JSONArray(response.body().string());
 
+                                     sheepArrayList.clear();
                                      populateSheep(jsonArray, sheepArrayList);
 
                                      mySheeps.setValue(sheepArrayList);
